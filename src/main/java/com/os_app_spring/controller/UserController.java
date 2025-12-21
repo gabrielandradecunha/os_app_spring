@@ -1,27 +1,54 @@
 package com.os_app_spring.controller;
 
+import com.os_app_spring.repository.UserRepository;
 import org.springframework.web.bind.annotation.*;
+import com.os_app_spring.model.User;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    @PostMapping
-    public void create() {
 
+    private UserRepository userRepository;
+
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @PostMapping
+    public User create(@RequestBody User user) {
+        user.setId(null);
+        user.setDataRegistro(java.time.LocalDateTime.now());
+        return userRepository.save(user);
     }
 
     @GetMapping
-    public void get(){
-
+    public List<User> getById() {
+        return userRepository.findAll();
     }
 
-    @DeleteMapping
-    public void delete(){
-
+    @GetMapping("/{id}")
+    public User getById(@PathVariable Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     }
 
-    @PutMapping
-    public void update(){
-
+    @DeleteMapping("{id}")
+    public void delete(@PathVariable Long id){
+        userRepository.deleteById(id);
     }
+
+    @PutMapping("/{id}")
+    public User update(@PathVariable Long id, @RequestBody User user) {
+        User existing = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        existing.setNome(user.getNome());
+        existing.setEmail(user.getEmail());
+        existing.setAtivo(user.getAtivo());
+
+        return userRepository.save(existing);
+    }
+
 }
