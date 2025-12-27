@@ -1,2 +1,1 @@
-# os_app_spring
-# os_app_spring
+# Aplicativo de gerênciamento de Ordens de Serviço
